@@ -331,6 +331,11 @@ public class EnemyScript : MonoBehaviour
 
     }
 
+    public void StopHit()
+    {
+        laserWeapon.SetActive(false);
+    }
+
     public void HitEvent()
     {
         if (!playerCombat.isAttackingEnemy && bos == true)
