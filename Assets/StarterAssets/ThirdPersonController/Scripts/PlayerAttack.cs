@@ -36,8 +36,10 @@ public class PlayerAttack : MonoBehaviour
     public bool Keris;
     public bool Golok;
 
+
     public GameObject golok1;
     public GameObject keris2;
+    private Skip laser;
     private EnemyDetection enemyDetection;
     private EnemyScript lockedTarget;
     private EnemyManager enemyManager;
@@ -48,6 +50,8 @@ public class PlayerAttack : MonoBehaviour
     public UnityEvent<EnemyScript> OnHit;
     public UnityEvent<EnemyScript> OnCounterAttack;
     public UnityEvent<EnemyScript> OnTrajectory;
+
+    public bool impactLaser;
 
     int currentWeapon = 0;
     bool golokActive = true;
@@ -60,6 +64,7 @@ public class PlayerAttack : MonoBehaviour
         _input = GetComponent<StarterAssets.StarterAssetsInputs>();
         combo = 0; // Mulai dari combo 0
         enemyDetection = GetComponentInChildren<EnemyDetection>();
+        laser = GetComponent<Skip>();
     }
 
     // Update is called once per frame
@@ -71,6 +76,9 @@ public class PlayerAttack : MonoBehaviour
         ResetComboWithTime();
         Switching();
         UnTouchable();
+        // if(laser.laserHit == true){
+        //     impactLaser = true;
+        // }
     }
 
     public void Switching()
@@ -347,6 +355,7 @@ public class PlayerAttack : MonoBehaviour
 
     public void DamageEvent()
     {
+        
         if (hidden == false) { 
         animator.SetTrigger("hit");
             Debug.Log("kenahit");

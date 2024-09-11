@@ -4,13 +4,14 @@ using System.Runtime.Serialization.Formatters;
 using System;
 using UnityEngine;
 
-public class skIP : MonoBehaviour
+public class Skip : MonoBehaviour
 {
     public int damageOverTime = 30;
 
     public GameObject HitEffect;
     public float HitOffset = 0;
     public bool useLaserRotation = false;
+    public bool laserHit;
 
     public float MaxLength;
     private LineRenderer Laser;
@@ -78,10 +79,15 @@ public class skIP : MonoBehaviour
                 {
                     hit.collider.GetComponent<HittedObject>().TakeDamage(damageOverTime * Time.deltaTime);
                 }*/
+                if(hit.collider.tag == "Player"){
+                    laserHit = true;
+                    Debug.Log("asli");
+                }
             }
             else
             {
                 //End laser position if doesn't collide with object
+                laserHit = false;
                 var EndPos = transform.position + transform.forward * MaxLength;
                 Laser.SetPosition(1, EndPos);
                 HitEffect.transform.position = EndPos;

@@ -13,13 +13,26 @@ public class EnemyScript : MonoBehaviour
     private EnemyDetection enemyDetection;
     private CharacterController characterController;
     private StarterAssetsInputs starterAssetsInputs;
+    private Skip laser;
 
     [Header("Stats")]
     public int health = 3;
     private float moveSpeed = 1;
     private Vector3 moveDirection;
 
+
+    [Header("Type")]
+    public bool bos;
+    public bool bigSkeleton;
+
+    [Header("Weapon")]
+    public GameObject laserWeapon;
+    public bool beam;
+
     [Header("States")]
+    [SerializeField] private bool isAware;
+    private bool hasTriggeredAware = false;
+
     [SerializeField] private bool isPreparingAttack;
     [SerializeField] private bool isMoving;
     [SerializeField] private bool isRetreating;
@@ -44,6 +57,7 @@ public class EnemyScript : MonoBehaviour
     {
         starterAssetsInputs = GetComponent<StarterAssetsInputs>();
         enemyManager = GetComponentInParent<EnemyManager>();
+        laser = GetComponent<Skip>();
 
         animator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
@@ -75,7 +89,7 @@ public class EnemyScript : MonoBehaviour
         else
         {
             StopMoving();
-        }   
+        }
 
         yield return new WaitForSeconds(1);
 
@@ -84,11 +98,36 @@ public class EnemyScript : MonoBehaviour
 
     void Update()
     {
-        //Constantly look at player
-        transform.LookAt(new Vector3(playerCombat.transform.position.x, transform.position.y, playerCombat.transform.position.z));
 
+        //Constantly look at player
+
+        if (Vector3.Distance(transform.position, playerCombat.transform.position) < 10)
+        {
+            isAware = true;
+        }
+
+        if (isAware && !hasTriggeredAware)
+        {
+            // Trigger the "Aware" animation only once
+            StartCoroutine(OnAware());
+            IEnumerator OnAware()
+            {
+                animator.SetBool("Aware", true);
+                yield return new WaitForSeconds(0.05f);
+                hasTriggeredAware = true;
+                animator.SetBool("Aware", false);
+            }
+            // Set flag to true after triggering
+        }
+
+        if (isAware)
+        {
+            // Rotate to look at player
+            transform.LookAt(new Vector3(playerCombat.transform.position.x, transform.position.y, playerCombat.transform.position.z));
+            MoveEnemy(moveDirection);
+        }
         //Only moves if the direction is set
-        MoveEnemy(moveDirection);
+
     }
 
     //Listened event from Player Animation
@@ -186,7 +225,7 @@ public class EnemyScript : MonoBehaviour
         IEnumerator PrepAttack()
         {
             PrepareAttack(true);
-            yield return new WaitForSeconds(Random.Range(.2f,2f));
+            yield return new WaitForSeconds(Random.Range(.2f, 2f));
             moveDirection = Vector3.forward;
             isMoving = true;
         }
@@ -251,25 +290,56 @@ public class EnemyScript : MonoBehaviour
         if (!isPreparingAttack)
             return;
 
-        if(Vector3.Distance(transform.position, playerCombat.transform.position) < 2)
+        if (bos == true)
         {
-            StopMoving();
-            if (!playerCombat.isCountering && !playerCombat.isAttackingEnemy)
-                Attack();
-            else
-                PrepareAttack(false);
+            if (Vector3.Distance(transform.position, playerCombat.transform.position) < 4)
+            {
+                StopMoving();
+                if (!playerCombat.isCountering && !playerCombat.isAttackingEnemy)
+                    Attack();
+                else
+                    PrepareAttack(false);
+            } else if(Vector3.Distance(transform.position, playerCombat.transform.position) > 4)
+            {
+                
+            }
         }
+        else if (!bos)
+        {
+            if (Vector3.Distance(transform.position, playerCombat.transform.position) < 2)
+            {
+                StopMoving();
+                if (!playerCombat.isCountering && !playerCombat.isAttackingEnemy)
+                    Attack();
+                else
+                    PrepareAttack(false);
+            }
+        }
+
+
     }
 
     private void Attack()
     {
         transform.DOMove(transform.position + (transform.forward / 1), .5f);
         animator.SetTrigger("AirPunch");
+        if (bos == true && Vector3.Distance(transform.position, playerCombat.transform.position) < 4)
+        {
+            laserWeapon.SetActive(enabled);
+            animator.SetBool("Beam", true);
+        }
+
     }
 
     public void HitEvent()
     {
-        if(!playerCombat.isCountering && !playerCombat.isAttackingEnemy)
+        if (!playerCombat.isAttackingEnemy && bos == true)
+        {
+            playerCombat.DamageEvent();
+            laserWeapon.SetActive(enabled);
+        }
+
+        if (!playerCombat.isCountering && !playerCombat.isAttackingEnemy)
             playerCombat.DamageEvent();
 
         PrepareAttack(false);
@@ -279,7 +349,7 @@ public class EnemyScript : MonoBehaviour
     {
         isMoving = false;
         moveDirection = Vector3.zero;
-        if(characterController.enabled)
+        if (characterController.enabled)
             characterController.Move(moveDirection);
     }
 
@@ -296,7 +366,7 @@ public class EnemyScript : MonoBehaviour
         if (PrepareAttackCoroutine != null)
             StopCoroutine(PrepareAttackCoroutine);
 
-        if(DamageCoroutine != null)
+        if (DamageCoroutine != null)
             StopCoroutine(DamageCoroutine);
 
         if (MovementCoroutine != null)
