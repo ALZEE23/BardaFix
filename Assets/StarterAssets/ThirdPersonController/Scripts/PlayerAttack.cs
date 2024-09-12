@@ -39,13 +39,16 @@ public class PlayerAttack : MonoBehaviour
 
     public GameObject golok1;
     public GameObject keris2;
-    private Skip laser;
+    public LaserBeam laserBeam;
     private EnemyDetection enemyDetection;
+    public EnemyScript Bos;
     private EnemyScript lockedTarget;
     private EnemyManager enemyManager;
     private Coroutine counterCoroutine;
     private Coroutine attackCoroutine;
     private Coroutine damageCoroutine;
+    [SerializeField] private ParticleSystemScript punchParticle;
+    [SerializeField] private Transform punchPosition;
 
     public UnityEvent<EnemyScript> OnHit;
     public UnityEvent<EnemyScript> OnCounterAttack;
@@ -64,7 +67,8 @@ public class PlayerAttack : MonoBehaviour
         _input = GetComponent<StarterAssets.StarterAssetsInputs>();
         combo = 0; // Mulai dari combo 0
         enemyDetection = GetComponentInChildren<EnemyDetection>();
-        laser = GetComponent<Skip>();
+
+        // laserBeam = FindObjectOfType<LaserBeam>();
     }
 
     // Update is called once per frame
@@ -107,7 +111,8 @@ public class PlayerAttack : MonoBehaviour
         {
             Golok = true;
             Keris = false;
-        } else if(_input.axis < 0)
+        }
+        else if (_input.axis < 0)
         {
             Keris = true;
             Golok = false;
@@ -115,20 +120,22 @@ public class PlayerAttack : MonoBehaviour
 
 
 
-        if(Golok == true)
+        if (Golok == true)
         {
             golok1.gameObject.SetActive(true);
-        } else
+        }
+        else
         {
             golok1.gameObject.SetActive(false);
         }
 
-        if(Keris == true) 
+        if (Keris == true)
         {
-            keris2.gameObject.SetActive(true);        
-        } else
+            keris2.gameObject.SetActive(true);
+        }
+        else
         {
-            keris2 .gameObject.SetActive(false);
+            keris2.gameObject.SetActive(false);
         }
     }
 
@@ -207,7 +214,7 @@ public class PlayerAttack : MonoBehaviour
         return Vector3.Distance(transform.position, target.transform.position);
     }
 
-    void AttackType( EnemyScript target)
+    void AttackType(EnemyScript target)
     {
 
 
@@ -261,7 +268,7 @@ public class PlayerAttack : MonoBehaviour
         OnHit.Invoke(lockedTarget);
 
         //Polish
-       //punchParticle.PlayParticleAtPosition(punchPosition.position);
+        punchParticle.PlayParticleAtPosition(punchPosition.position);
     }
 
     public void FinishCombo()
@@ -344,7 +351,7 @@ public class PlayerAttack : MonoBehaviour
         ThirdPersonController player = this.GetComponent<ThirdPersonController>();
         controller = player._controller;
         AudioSource.PlayClipAtPoint(attack2, transform.TransformPoint(controller.center));
-        
+
     }
     private void onAttack3(AnimationEvent animationEvent)
     {
@@ -355,27 +362,59 @@ public class PlayerAttack : MonoBehaviour
 
     public void DamageEvent()
     {
-        
-        if (hidden == false) { 
-        animator.SetTrigger("hit");
+
+        if (hidden == false)
+        {
+            animator.SetTrigger("hit");
             Debug.Log("kenahit");
 
-        if (damageCoroutine != null)
-            StopCoroutine(damageCoroutine);
-        damageCoroutine = StartCoroutine(DamageCoroutine());
 
-        IEnumerator DamageCoroutine()
-        {
-            player.health -= 2;
-            player._speed = 0.5f;
-            player.MoveSpeed = 0.5f;
-            _input.enabled = false;
-            yield return new WaitForSeconds(0.5f);
-            player._speed = 3.5f;
-            player.MoveSpeed = 3.5f;
-            _input.enabled = true;
-            LerpCharacterAcceleration();
+            if (damageCoroutine != null)
+                StopCoroutine(damageCoroutine);
+            damageCoroutine = StartCoroutine(DamageCoroutine());
+
+            IEnumerator DamageCoroutine()
+            {
+                player.health -= 2;
+                player._speed = 0.5f;
+                player.MoveSpeed = 0.5f;
+                _input.enabled = false;
+                yield return new WaitForSeconds(0.5f);
+                player._speed = 3.5f;
+                player.MoveSpeed = 3.5f;
+                _input.enabled = true;
+                LerpCharacterAcceleration();
+            }
+
         }
+    }
+
+    public void DamageEventBos()
+    {
+        if (hidden == false && laserBeam.laserHit == true)
+        {
+            animator.SetTrigger("hit");
+            Debug.Log("kenahit");
+
+
+            if (damageCoroutine != null)
+                StopCoroutine(damageCoroutine);
+            damageCoroutine = StartCoroutine(DamageCoroutine());
+
+            IEnumerator DamageCoroutine()
+            {
+                player.health -= 2;
+                player._speed = 0.5f;
+                player.MoveSpeed = 0.5f;
+                _input.enabled = false;
+                yield return new WaitForSeconds(0.5f);
+                laserBeam.laserHit = false;
+                player._speed = 3.5f;
+                player.MoveSpeed = 3.5f;
+                _input.enabled = true;
+                LerpCharacterAcceleration();
+            }
+
         }
     }
 
@@ -387,7 +426,7 @@ public class PlayerAttack : MonoBehaviour
 
     void UnTouchable()
     {
-        if(_input.dash == true)
+        if (_input.dash == true)
         {
             player._speed = 3.5f;
             player.MoveSpeed = 3.5f;

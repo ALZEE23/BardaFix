@@ -18,35 +18,77 @@ public class EnemyDetection : MonoBehaviour
 
     private void Start()
     {
-        //moveInput = GetComponent<StarterAssetsInputs>();
         movementInput = GetComponentInParent<MovementInput>();
         combatScript = GetComponentInParent<CombatScript>();
     }
 
     private void Update()
     {
-        var camera = Camera.main;
-        var forward = camera.transform.forward;
-        var right = camera.transform.right;
+        DetectEnemiesWithSphereCast();
+        RaycastToDetectEnemy();
+    }
 
-        forward.y = 0f;
+    // Fungsi yang sudah ada untuk mendeteksi musuh dengan SphereCast
+    private void DetectEnemiesWithSphereCast()
+    {
+        var forward = transform.forward;  // Gunakan arah pemain
+        var right = transform.right;
+
+        forward.y = 0f;  // Kita abaikan perubahan di sumbu Y untuk tetap di bidang horizontal
         right.y = 0f;
 
         forward.Normalize();
-        right.Normalize();
+        right.Normalize(); 
 
-        //inputDirection = forward * movementInput.moveAxis.y + right * movementInput.moveAxis.x;
-        //inputDirection = inputDirection.normalized;
-
+        // Mengambil input gerakan dari StarterAssetsInputs (tanpa kamera)
         inputDirection = forward * moveInput.move.y + right * moveInput.move.x;
         inputDirection = inputDirection.normalized;
 
         RaycastHit info;
 
-        if (Physics.SphereCast(transform.position, 3f, inputDirection, out info, 10,layerMask))
+        if (Physics.SphereCast(transform.position, 3f, inputDirection, out info, 10, layerMask))
         {
-            if(info.collider.transform.GetComponent<EnemyScript>().IsAttackable())
-                currentTarget = info.collider.transform.GetComponent<EnemyScript>();
+            EnemyScript enemy = info.collider.transform.GetComponent<EnemyScript>();
+            if (enemy != null && enemy.IsAttackable())
+            {
+                currentTarget = enemy;
+            }
+        }
+    }
+
+    // Fungsi untuk mendeteksi musuh dengan Raycast ke arah depan pemain
+    private void RaycastToDetectEnemy()
+    {
+        // Tentukan posisi awal raycast dari sedikit di depan pemain
+        Vector3 rayOrigin = transform.position + transform.forward * 0.5f;
+
+        // Gunakan arah pemain menghadap
+        Vector3 rayDirection = transform.forward;
+
+        // Panjang raycast
+        float rayLength = 2.0f;
+
+        // LayerMask untuk musuh
+        LayerMask enemyMask = LayerMask.GetMask("Enemy");
+
+        // Debugging raycast untuk visualisasi
+        Debug.DrawRay(rayOrigin, rayDirection * rayLength, Color.red);
+
+        // Melakukan raycast
+        if (Physics.Raycast(rayOrigin, rayDirection, out RaycastHit hit, rayLength, enemyMask))
+        {
+            Debug.Log("Musuh terdeteksi: " + hit.collider.name);
+
+            // Mendapatkan EnemyScript dari collider yang terdeteksi
+            EnemyScript enemy = hit.collider.GetComponent<EnemyScript>();
+            if (enemy != null && enemy.IsAttackable())
+            {
+                currentTarget = enemy;
+            }
+        }
+        else
+        {
+            // Debug.Log("Tidak ada musuh di depan.");
         }
     }
 
@@ -70,7 +112,7 @@ public class EnemyDetection : MonoBehaviour
         Gizmos.color = Color.black;
         Gizmos.DrawRay(transform.position, inputDirection);
         Gizmos.DrawWireSphere(transform.position, 1);
-        if(CurrentTarget() != null)
+        if (CurrentTarget() != null)
             Gizmos.DrawSphere(CurrentTarget().transform.position, .5f);
     }
 }

@@ -326,7 +326,7 @@ namespace StarterAssets
         private IEnumerator PerformDash()
         {
 
-            Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("EnemyWeapon"), true);
+            Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Wall"), true);
 
             isDashing = true;
             moveAction.Disable();
@@ -345,7 +345,7 @@ namespace StarterAssets
             }
 
             moveAction.Enable();
-            Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("EnemyWeapon"), false);
+            Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Wall"), false);
             isDashing = false;
             _input.dash = false;
             _animator.ResetTrigger("dash");

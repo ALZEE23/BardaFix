@@ -13,7 +13,6 @@ public class EnemyScript : MonoBehaviour
     private EnemyDetection enemyDetection;
     private CharacterController characterController;
     private StarterAssetsInputs starterAssetsInputs;
-    private Skip laser;
 
     [Header("Stats")]
     public int health = 3;
@@ -27,6 +26,7 @@ public class EnemyScript : MonoBehaviour
 
     [Header("Weapon")]
     public GameObject laserWeapon;
+    public LaserBeam laser;
     public bool beam;
 
     [Header("States")]
@@ -57,7 +57,7 @@ public class EnemyScript : MonoBehaviour
     {
         starterAssetsInputs = GetComponent<StarterAssetsInputs>();
         enemyManager = GetComponentInParent<EnemyManager>();
-        laser = GetComponent<Skip>();
+
 
         animator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
@@ -106,19 +106,19 @@ public class EnemyScript : MonoBehaviour
             isAware = true;
         }
 
-        if (isAware && !hasTriggeredAware)
-        {
-            // Trigger the "Aware" animation only once
-            StartCoroutine(OnAware());
-            IEnumerator OnAware()
-            {
-                animator.SetBool("Aware", true);
-                yield return new WaitForSeconds(0.05f);
-                hasTriggeredAware = true;
-                animator.SetBool("Aware", false);
-            }
-            // Set flag to true after triggering
-        }
+        // if (isAware && !hasTriggeredAware)
+        // {
+        //     // Trigger the "Aware" animation only once
+        //     StartCoroutine(OnAware());
+        //     IEnumerator OnAware()
+        //     {
+        //         animator.SetBool("Aware", true);
+        //         yield return new WaitForSeconds(0.05f);
+        //         hasTriggeredAware = true;
+        //         animator.SetBool("Aware", false);
+        //     }
+        //     // Set flag to true after triggering
+        // }
 
         if (isAware)
         {
@@ -252,7 +252,8 @@ public class EnemyScript : MonoBehaviour
     {
         //Set movespeed based on direction
         moveSpeed = 1;
-
+        if (direction == Vector3.forward && bigSkeleton == true)
+            moveSpeed = 5;
         if (direction == Vector3.forward)
             moveSpeed = 5;
         if (direction == -Vector3.forward)
@@ -299,9 +300,10 @@ public class EnemyScript : MonoBehaviour
                     Attack();
                 else
                     PrepareAttack(false);
-            } else if(Vector3.Distance(transform.position, playerCombat.transform.position) > 4)
+            }
+            else if (Vector3.Distance(transform.position, playerCombat.transform.position) > 4)
             {
-                
+
             }
         }
         else if (!bos)
@@ -325,7 +327,8 @@ public class EnemyScript : MonoBehaviour
         animator.SetTrigger("AirPunch");
         if (bos == true && Vector3.Distance(transform.position, playerCombat.transform.position) < 4)
         {
-            laserWeapon.SetActive(enabled);
+            // laserWeapon.SetActive(true);
+
             animator.SetBool("Beam", true);
         }
 
@@ -340,11 +343,11 @@ public class EnemyScript : MonoBehaviour
     {
         if (!playerCombat.isAttackingEnemy && bos == true)
         {
-            playerCombat.DamageEvent();
-            laserWeapon.SetActive(enabled);
+            playerCombat.DamageEventBos();
+            // laserWeapon.SetActive(true);
         }
 
-        if (!playerCombat.isCountering && !playerCombat.isAttackingEnemy)
+        if (!playerCombat.isCountering && !playerCombat.isAttackingEnemy && bos == false)
             playerCombat.DamageEvent();
 
         PrepareAttack(false);

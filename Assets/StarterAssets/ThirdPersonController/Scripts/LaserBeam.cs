@@ -81,6 +81,8 @@ public class LaserBeam : MonoBehaviour
                 {
                     laserHit = true;
                     Debug.Log("asli");
+                } else {
+                    laserHit = false;
                 }
             }
             else
