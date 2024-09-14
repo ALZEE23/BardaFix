@@ -74,8 +74,8 @@ public class CombatScript : MonoBehaviour
         }
 
         //If the player is moving the movement input, use the "directional" detection to determine the enemy
-        if (enemyDetection.InputMagnitude() > .2f)
-            lockedTarget = enemyDetection.CurrentTarget();
+        //if (enemyDetection.InputMagnitude() > .2f)
+        //    lockedTarget = enemyDetection.CurrentTarget();
 
         //Extra check to see if the locked target was set
         if(lockedTarget == null)

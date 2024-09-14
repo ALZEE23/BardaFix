@@ -9,7 +9,7 @@ public class EnemyScript : MonoBehaviour
     //Declarations
     private Animator animator;
     private PlayerAttack playerCombat;
-    private EnemyManager enemyManager;
+    public EnemyManager enemyManager;
     private EnemyDetection enemyDetection;
     private CharacterController characterController;
     private StarterAssetsInputs starterAssetsInputs;
@@ -101,7 +101,7 @@ public class EnemyScript : MonoBehaviour
 
         //Constantly look at player
 
-        if (Vector3.Distance(transform.position, playerCombat.transform.position) < 10)
+        if (Vector3.Distance(transform.position, playerCombat.transform.position) < 15)
         {
             isAware = true;
         }
@@ -133,7 +133,7 @@ public class EnemyScript : MonoBehaviour
     //Listened event from Player Animation
     void OnPlayerHit(EnemyScript target)
     {
-        if (target == this)
+        if (target == this && GetAvailability())
         {
             StopEnemyCoroutines();
             DamageCoroutine = StartCoroutine(HitCoroutine());
@@ -144,7 +144,7 @@ public class EnemyScript : MonoBehaviour
 
             health--;
 
-            if (health <= 0)
+            if (health < 0 || health == 0)
             {
                 Death();
                 return;
@@ -191,7 +191,27 @@ public class EnemyScript : MonoBehaviour
         characterController.enabled = false;
         animator.SetTrigger("Death");
         enemyManager.SetEnemyAvailiability(this, false);
+        StartCoroutine(DestroyEnemy());
+
+        IEnumerator DestroyEnemy()
+        {
+            yield return new WaitForSeconds(1f);
+        }
     }
+    public bool GetAvailability()
+    {
+        for (int i = 0; i < enemyManager.allEnemies.Length; i++)
+        {
+            if (enemyManager.allEnemies[i].enemyScript == this)
+            {
+                return enemyManager.allEnemies[i].enemyAvailability;
+            }
+        }
+        return false; // Default jika tidak ditemukan
+    }
+
+    // Set enemyAvailability
+   
 
     public void SetRetreat()
     {
@@ -252,8 +272,7 @@ public class EnemyScript : MonoBehaviour
     {
         //Set movespeed based on direction
         moveSpeed = 1;
-        if (direction == Vector3.forward && bigSkeleton == true)
-            moveSpeed = 5;
+        
         if (direction == Vector3.forward)
             moveSpeed = 5;
         if (direction == -Vector3.forward)

@@ -65,10 +65,10 @@ MonoBehaviour:
     BakedLightingFeatures: -1
   ShadowSettings:
     Mode: 1
-    Threshold: 0.073
+    Threshold: 0.164
     CrispAntiAliased: 1
     Smoothness: 0.713
-    MaxDistance: 15
+    MaxDistance: 500
     DistanceFade: 0.1
     Pattern: {fileID: 2800000, guid: 00216c7407cfba94dbe2a93705fd6639, type: 3}
     PatternScale: {x: 3, y: 3, z: 0}

@@ -11,7 +11,8 @@ Material:
   m_Shader: {fileID: -6465566751694194690, guid: da04d4c634f86154bb5186d41773e78a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _STENCIL_OVERRIDE
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -48,12 +49,12 @@ Material:
     - _BlendMode: 0
     - _BlendSrc: 1
     - _ControlStencil: 1
-    - _ForwardStencilComp: 0
-    - _ForwardStencilPass: 0
+    - _ForwardStencilComp: 8
+    - _ForwardStencilPass: 2
     - _ForwardStencilReadMask: 255
-    - _ForwardStencilRef: 0
-    - _ForwardStencilWriteMask: 255
-    - _OutlinesStencilLayer: 0
+    - _ForwardStencilRef: 128
+    - _ForwardStencilWriteMask: 128
+    - _OutlinesStencilLayer: 8
     - _OverrideRamp: 0
     - _OverrideRamp_RimSmoothness: 0.1
     - _OverrideRamp_RimThreshold: 0.5

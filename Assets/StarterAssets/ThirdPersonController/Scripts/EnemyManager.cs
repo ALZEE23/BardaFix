@@ -22,6 +22,8 @@ public class EnemyManager : MonoBehaviour
         {
             allEnemies[i].enemyScript = enemies[i];
             allEnemies[i].enemyAvailability = true;
+
+            enemies[i].enemyManager = this;
         }
 
         StartAI();

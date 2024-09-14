@@ -52,9 +52,9 @@ Material:
     - _ForwardStencilComp: 8
     - _ForwardStencilPass: 2
     - _ForwardStencilReadMask: 255
-    - _ForwardStencilRef: 128
-    - _ForwardStencilWriteMask: 128
-    - _OutlinesStencilLayer: 8
+    - _ForwardStencilRef: 16
+    - _ForwardStencilWriteMask: 16
+    - _OutlinesStencilLayer: 5
     - _OverrideRamp: 0
     - _OverrideRamp_RimSmoothness: 0.1
     - _OverrideRamp_RimThreshold: 0.5

@@ -23,7 +23,7 @@ MonoBehaviour:
       StencilLayer: 8
       StencilPassOp: 0
       Color: {r: 0, g: 0, b: 0, a: 1}
-      Thickness: 0.01
+      Thickness: 0.1
       FixedScreenSpaceThickness: 1
       NoiseAmplitude: 0
       NoiseFrequency: 0
@@ -40,10 +40,10 @@ MonoBehaviour:
       LayerMask:
         serializedVersion: 2
         m_Bits: 4294967295
-      StencilLayer: 0
+      StencilLayer: 5
       StencilPassOp: 0
       Color: {r: 0, g: 0, b: 0, a: 1}
-      Thickness: 0
+      Thickness: 0.01
       FixedScreenSpaceThickness: 1
       NoiseAmplitude: 0
       NoiseFrequency: 0

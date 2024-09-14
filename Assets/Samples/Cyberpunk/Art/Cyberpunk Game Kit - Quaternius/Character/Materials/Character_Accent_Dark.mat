@@ -11,9 +11,9 @@ Material:
   m_Shader: {fileID: -6465566751694194690, guid: da04d4c634f86154bb5186d41773e78a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
+  m_ValidKeywords: []
+  m_InvalidKeywords:
   - _HAS_OUTLINES_STENCIL_LAYER
-  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -50,11 +50,13 @@ Material:
     - _BlendSrc: 1
     - _BumpScale: 1
     - _ControlOutlinesStencilLayer: 1
+    - _ControlStencil: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _ForwardStencilComp: 8
     - _ForwardStencilPass: 2
+    - _ForwardStencilReadMask: 255
     - _ForwardStencilRef: 128
     - _ForwardStencilWriteMask: 128
     - _GlossMapScale: 1

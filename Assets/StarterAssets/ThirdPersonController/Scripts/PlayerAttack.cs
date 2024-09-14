@@ -62,7 +62,7 @@ public class PlayerAttack : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        enemyManager = FindObjectOfType<EnemyManager>();
+        //enemyManager = FindObjectOfType<EnemyManager>();
         animator = GetComponent<Animator>();
         _input = GetComponent<StarterAssets.StarterAssetsInputs>();
         combo = 0; // Mulai dari combo 0
@@ -80,6 +80,7 @@ public class PlayerAttack : MonoBehaviour
         ResetComboWithTime();
         Switching();
         UnTouchable();
+        enemyManager = enemyDetection.enemyManager;
         // if(laser.laserHit == true){
         //     impactLaser = true;
         // }
@@ -154,9 +155,10 @@ public class PlayerAttack : MonoBehaviour
         if (isAttackingEnemy)
             return;
 
-        //Check to see if the detection behavior has an enemy set
+        // Cek apakah behavior deteksi musuh memiliki target yang terdeteksi
         if (enemyDetection.CurrentTarget() == null)
         {
+            // Jika tidak ada musuh yang terdeteksi dan tidak ada musuh hidup, hentikan serangan
             if (enemyManager.AliveEnemyCount() == 0)
             {
                 AttackType(null);
@@ -164,19 +166,21 @@ public class PlayerAttack : MonoBehaviour
             }
             else
             {
+                // Jika tidak ada musuh yang terdeteksi, pilih musuh secara acak dari EnemyManager
                 lockedTarget = enemyManager.RandomEnemy();
             }
         }
-
-        //If the player is moving the movement input, use the "directional" detection to determine the enemy
-        if (enemyDetection.InputMagnitude() > .2f)
+        else
+        {
+            // Jika musuh terdeteksi di sekitar pemain, set sebagai lockedTarget
             lockedTarget = enemyDetection.CurrentTarget();
+        }
 
-        //Extra check to see if the locked target was set
+        // Cek ekstra apakah lockedTarget sudah di-set, jika tidak set secara acak
         if (lockedTarget == null)
             lockedTarget = enemyManager.RandomEnemy();
 
-        //AttackTarget
+        // Serang target yang terkunci
         Attack(lockedTarget, TargetDistance(lockedTarget));
     }
 
@@ -220,7 +224,7 @@ public class PlayerAttack : MonoBehaviour
 
         if (attackCoroutine != null)
             StopCoroutine(attackCoroutine);
-        attackCoroutine = StartCoroutine(AttackCoroutine(isLastHit() ? 1.5f : .65f));
+        attackCoroutine = StartCoroutine(AttackCoroutine(.65f));
 
         //Check if last enemy
         if (isLastHit())
@@ -263,10 +267,13 @@ public class PlayerAttack : MonoBehaviour
     public void HitEvent()
     {
         if (lockedTarget == null || enemyManager.AliveEnemyCount() == 0)
+        {
+            Debug.LogWarning("HitEvent gagal: lockedTarget null atau tidak ada musuh hidup.");
             return;
+        }
 
+        Debug.Log("HitEvent dipanggil pada target: " + lockedTarget.name);
         OnHit.Invoke(lockedTarget);
-
         //Polish
         punchParticle.PlayParticleAtPosition(punchPosition.position);
     }
@@ -441,4 +448,9 @@ public class PlayerAttack : MonoBehaviour
         hidden = false;
     }
 
+
+    private void OnAttack1()
+    {
+        AttackCheck();
+    }
 }

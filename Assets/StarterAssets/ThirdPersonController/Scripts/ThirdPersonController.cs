@@ -114,6 +114,11 @@ namespace StarterAssets
         public float dashDuration = 0.2f;
         private bool isDashing = false;
 
+        private int dashCount = 0;
+        public int maxDashCount = 2;
+        public float dashCooldown = 0.15f;
+        private bool dashOnCooldown = false;
+
 #if ENABLE_INPUT_SYSTEM 
         private PlayerInput _playerInput;
 #endif
@@ -317,7 +322,7 @@ namespace StarterAssets
 
         private void Dash()
         {
-            if (Grounded && _input.dash && !isDashing)
+            if (Grounded && _input.dash && !isDashing && dashCount < maxDashCount && !dashOnCooldown)
             {
                 StartCoroutine(PerformDash());
             }
@@ -325,14 +330,14 @@ namespace StarterAssets
 
         private IEnumerator PerformDash()
         {
-
             Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Wall"), true);
 
             isDashing = true;
+            dashCount++;
             moveAction.Disable();
 
-            _dashDirection = transform.forward; 
-            if(isDashing)
+            _dashDirection = transform.forward;
+            if (isDashing)
             {
                 _animator.SetTrigger("dash");
             }
@@ -349,7 +354,14 @@ namespace StarterAssets
             isDashing = false;
             _input.dash = false;
             _animator.ResetTrigger("dash");
-            
+
+            if (dashCount >= maxDashCount)
+            {
+                dashOnCooldown = true;
+                yield return new WaitForSeconds(dashCooldown);
+                dashCount = 0;
+                dashOnCooldown = false;
+            }
         }
 
 
