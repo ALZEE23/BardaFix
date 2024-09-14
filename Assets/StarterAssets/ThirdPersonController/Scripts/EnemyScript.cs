@@ -98,6 +98,7 @@ public class EnemyScript : MonoBehaviour
 
     void Update()
     {
+        
 
         //Constantly look at player
 
