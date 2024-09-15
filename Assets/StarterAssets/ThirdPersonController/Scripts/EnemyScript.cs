@@ -31,6 +31,7 @@ public class EnemyScript : MonoBehaviour
 
     [Header("States")]
     [SerializeField] private bool isAware;
+    public bool isDead = false;
     private bool hasTriggeredAware = false;
 
     [SerializeField] private bool isPreparingAttack;
@@ -101,6 +102,10 @@ public class EnemyScript : MonoBehaviour
         
 
         //Constantly look at player
+        if(this.health < 1)
+        {
+            Death();
+        }
 
         if (Vector3.Distance(transform.position, playerCombat.transform.position) < 15)
         {
@@ -145,7 +150,7 @@ public class EnemyScript : MonoBehaviour
 
             health--;
 
-            if (health < 0 || health == 0)
+            if (health < 0 || health == 0 || health <= 0 || health < 1)
             {
                 Death();
                 return;
@@ -188,15 +193,24 @@ public class EnemyScript : MonoBehaviour
     {
         StopEnemyCoroutines();
 
-        this.enabled = false;
+        isDead = true;
         characterController.enabled = false;
         animator.SetTrigger("Death");
         enemyManager.SetEnemyAvailiability(this, false);
         StartCoroutine(DestroyEnemy());
-
+        this.enabled = false;
         IEnumerator DestroyEnemy()
         {
-            yield return new WaitForSeconds(1f);
+            if (bigSkeleton)
+            {
+                yield return new WaitForSeconds(0.3f); this.enabled = false;
+            } else
+            {
+                yield return new WaitForSeconds(0.3f); 
+
+            }
+           
+             
         }
     }
     public bool GetAvailability()
@@ -212,7 +226,18 @@ public class EnemyScript : MonoBehaviour
     }
 
     // Set enemyAvailability
-   
+    public void SetAvailability(bool state)
+    {
+        for (int i = 0; i < enemyManager.allEnemies.Length; i++)
+        {
+            if (enemyManager.allEnemies[i].enemyScript == this)
+            {
+                enemyManager.allEnemies[i].enemyAvailability = state;
+                break;
+            }
+        }
+    }
+
 
     public void SetRetreat()
     {
@@ -227,7 +252,13 @@ public class EnemyScript : MonoBehaviour
             isRetreating = true;
             moveDirection = -Vector3.forward;
             isMoving = true;
-            yield return new WaitUntil(() => Vector3.Distance(transform.position, playerCombat.transform.position) > 4);
+            if (bigSkeleton) { 
+                yield return new WaitUntil(() => Vector3.Distance(transform.position, playerCombat.transform.position) > 1); 
+            } else
+            {
+                 yield return new WaitUntil(() => Vector3.Distance(transform.position, playerCombat.transform.position) > 4);
+            }
+           
             isRetreating = false;
             StopMoving();
 

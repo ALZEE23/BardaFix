@@ -1,3 +1,4 @@
+using DG.Tweening.Core.Easing;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -137,10 +138,11 @@ public class EnemyManager : MonoBehaviour
         int count = 0;
         for (int i = 0; i < allEnemies.Length; i++)
         {
-            if (allEnemies[i].enemyScript.isActiveAndEnabled)
+            if (!allEnemies[i].enemyScript.isDead && allEnemies[i].enemyScript.isActiveAndEnabled)
                 count++;
         }
         aliveEnemyCount = count;
+        
         return count;
     }
 
@@ -155,6 +157,8 @@ public class EnemyManager : MonoBehaviour
         if (FindObjectOfType<EnemyDetection>().CurrentTarget() == enemy)
             FindObjectOfType<EnemyDetection>().SetCurrentTarget(null);
     }
+
+
 
 
 }

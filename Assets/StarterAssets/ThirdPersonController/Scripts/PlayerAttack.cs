@@ -35,10 +35,12 @@ public class PlayerAttack : MonoBehaviour
     public ThirdPersonController player;
     public bool Keris;
     public bool Golok;
+    public bool Shield;
 
 
     public GameObject golok1;
     public GameObject keris2;
+    public GameObject shield1;
     public LaserBeam laserBeam;
     private EnemyDetection enemyDetection;
     public EnemyScript Bos;
@@ -76,6 +78,7 @@ public class PlayerAttack : MonoBehaviour
     {
         animator.SetBool("Keris", Keris);
         animator.SetBool("Golok", Golok);
+        animator.SetBool("Shield", Shield);
         Combos();
         ResetComboWithTime();
         Switching();
@@ -110,14 +113,22 @@ public class PlayerAttack : MonoBehaviour
 
         if (_input.axis > 0)
         {
+            Shield = false;
             Golok = true;
             Keris = false;
         }
         else if (_input.axis < 0)
         {
+            Shield = false;
             Keris = true;
             Golok = false;
-        }
+        } 
+        //else if (_input.axis == 0) 
+        //{
+        //    Shield = true;
+        //    Keris = false;
+        //    Golok = false;
+        //}
 
 
 
@@ -137,6 +148,16 @@ public class PlayerAttack : MonoBehaviour
         else
         {
             keris2.gameObject.SetActive(false);
+        }
+
+
+        if (Shield == true)
+        {
+            shield1.gameObject.SetActive(true);
+        }
+        else
+        {
+            shield1.gameObject.SetActive(false);
         }
     }
 
@@ -167,7 +188,7 @@ public class PlayerAttack : MonoBehaviour
             else
             {
                 // Jika tidak ada musuh yang terdeteksi, pilih musuh secara acak dari EnemyManager
-                lockedTarget = enemyManager.RandomEnemy();
+                //lockedTarget = enemyManager.RandomEnemy();
             }
         }
         else
@@ -177,8 +198,8 @@ public class PlayerAttack : MonoBehaviour
         }
 
         // Cek ekstra apakah lockedTarget sudah di-set, jika tidak set secara acak
-        if (lockedTarget == null)
-            lockedTarget = enemyManager.RandomEnemy();
+        //if (lockedTarget == null)
+        //    lockedTarget = enemyManager.RandomEnemy();
 
         // Serang target yang terkunci
         Attack(lockedTarget, TargetDistance(lockedTarget));
@@ -196,7 +217,7 @@ public class PlayerAttack : MonoBehaviour
             return;
         }
 
-        if (distance < 15)
+        if (distance < 3)
         {
             //animationCount = (int) Mathf.Repeat((float) animationCount + 1, (float) attacks.Length);
             //string attackString = isLastHit() ? attacks[Random.Range(0, attacks.Length)] : attacks[animationCount];
@@ -280,7 +301,7 @@ public class PlayerAttack : MonoBehaviour
 
     public void FinishCombo()
     {
-        isAttackingEnemy = false;
+        
         serang = false;
         combo = 0; // Reset combo setelah stage terakhir
 
@@ -295,7 +316,7 @@ public class PlayerAttack : MonoBehaviour
         if (_input.attack1 && !serang)
         {
             //isAttackingEnemy = true;
-            isAttackingEnemy = true;
+            
             serang = true;
             lastAttackTime = Time.time;
 
@@ -321,13 +342,13 @@ public class PlayerAttack : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
 
         _input.attack1 = false;
-        isAttackingEnemy = false;
+      
 
         // Jika combo telah mencapai tahap ketiga
         if (combo == 3)
         {
             FinishCombo();
-            isAttackingEnemy = false;
+            
         }
         else
         {
@@ -343,7 +364,7 @@ public class PlayerAttack : MonoBehaviour
         {
             combo = 0; // Reset combo setelah waktu tertentu
             serang = false;
-            isAttackingEnemy = false;
+            
         }
     }
 

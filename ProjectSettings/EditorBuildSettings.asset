@@ -6,8 +6,20 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Samples/Cyberpunk/MainMenu.unity
+    guid: 9770be263849b2041b9a670f05d2acbc
+  - enabled: 1
+    path: Assets/Cutscene.unity
+    guid: ffce61750d532c5419df2884142ec783
+  - enabled: 1
+    path: Assets/Samples/Cyberpunk/Cyberpunk 3.unity
+    guid: 700ddbef32b2609499ce1d1a1ea7dfc1
+  - enabled: 1
     path: Assets/Samples/Cyberpunk/Cyberpunk 2.unity
     guid: 26874c994bedda84faabc2b8be0011a9
+  - enabled: 1
+    path: Assets/Credit.unity
+    guid: 279b487a321cd6046b431d385ca56550
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: f1eede0ea42d3a44da3c10568f1856ff, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 2091a88d61caeee449802ca4e340d3e7, type: 2}

@@ -9,7 +9,13 @@ public class Cutscene : MonoBehaviour
     // Start is called before the first frame update
     public void Swap(AnimationEvent animationEvent)
     {
-        scene.gameObject.SetActive(false);
+        StartCoroutine(uhuy());
+        IEnumerator uhuy()
+        {
+            yield return new WaitForSeconds(5); 
+            scene.gameObject.SetActive(false);
+        }
+       
         player.gameObject.SetActive(true);
     }
 }

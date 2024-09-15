@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
-#if ENABLE_INPUT_SYSTEM 
+using UnityEngine.UI;
+#if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 using UnityEngine.SocialPlatforms;
 #endif
@@ -97,6 +98,8 @@ namespace StarterAssets
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
 
+        public Slider healthSlider;
+
         // timeout deltatime
         private float _jumpTimeoutDelta;
         private float _fallTimeoutDelta;
@@ -118,6 +121,8 @@ namespace StarterAssets
         public int maxDashCount = 2;
         public float dashCooldown = 0.15f;
         private bool dashOnCooldown = false;
+
+        public GameObject dashParticle;
 
 #if ENABLE_INPUT_SYSTEM 
         private PlayerInput _playerInput;
@@ -162,6 +167,8 @@ namespace StarterAssets
 
         private void Start()
         {
+            healthSlider.maxValue = health; // Atur nilai maksimum slider ke health karakter
+            healthSlider.value = health;
             playerLayer = LayerMask.NameToLayer("Player");
             enemyLayer = LayerMask.NameToLayer("EnemyWeapon");
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
@@ -190,8 +197,9 @@ namespace StarterAssets
                 _input.move = Vector2.zero;
                 _input.dash = false;
                 _animator.SetBool("dead", dead=true);
-                StartCoroutine(Dead(4.0f));
+                //StartCoroutine(Dead(4.0f));
             }
+            healthSlider.value = health;
 
             JumpAndGravity();
             GroundedCheck();
@@ -324,6 +332,7 @@ namespace StarterAssets
         {
             if (Grounded && _input.dash && !isDashing && dashCount < maxDashCount && !dashOnCooldown)
             {
+                dashParticle.SetActive(true);
                 StartCoroutine(PerformDash());
             }
         }
@@ -354,14 +363,24 @@ namespace StarterAssets
             isDashing = false;
             _input.dash = false;
             _animator.ResetTrigger("dash");
+           
 
             if (dashCount >= maxDashCount)
             {
                 dashOnCooldown = true;
-                yield return new WaitForSeconds(dashCooldown);
+                yield return new WaitForSeconds(dashCooldown); 
                 dashCount = 0;
                 dashOnCooldown = false;
             }
+
+            StartCoroutine(DashParticle());
+
+            IEnumerator DashParticle()
+            {
+                yield return new WaitForSeconds(0.7f);
+                dashParticle.SetActive(false);
+            }
+           
         }
 
 
